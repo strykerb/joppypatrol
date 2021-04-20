@@ -5,9 +5,9 @@ class Play extends Phaser.Scene {
 
     preload() {
         // load images/tile sprites
-        this.load.image('rocket', './assets/rocket.png');
-        this.load.image('spaceship', './assets/spaceship.png');
-        this.load.image('starfield', './assets/starfield.png');
+        this.load.image('rocket', './assets/player.png');
+        this.load.image('spaceship', './assets/ErrorShip.png');
+        this.load.image('backdrop', './assets/backdrop.png');
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', {
             frameWidth: 64, 
@@ -20,7 +20,7 @@ class Play extends Phaser.Scene {
     create() {
         // place scrolling backdrop
         this.starfield = this.add.tileSprite(0, 0, game.config.width, 
-            game.config.height, 'starfield').setOrigin(0, 0);
+            game.config.height, 'backdrop').setOrigin(0, 0);
         
         // green UI background
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, 
@@ -85,9 +85,9 @@ class Play extends Phaser.Scene {
 
         // 60-second play clock
         scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(10000, () => {
+        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
     }
@@ -96,6 +96,9 @@ class Play extends Phaser.Scene {
         // check key input for restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
+        }
+        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.scene.start("menuScene");
         }
         
         this.starfield.tilePositionX -= starSpeed;
@@ -148,5 +151,8 @@ class Play extends Phaser.Scene {
         // score add and repaint
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score; 
+        
+        // Play explosion sound
+        this.sound.play('sfx_explosion');
     }
 }
