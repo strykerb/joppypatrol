@@ -8,6 +8,10 @@ class Play extends Phaser.Scene {
         this.load.image('rocket', './assets/player.png');
         this.load.image('spaceship', './assets/ErrorShip.png');
         this.load.image('backdrop', './assets/backdrop.png');
+
+        // load music
+        this.load.audio("music", ["./assets/music.mp3"]);
+
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', {
             frameWidth: 64, 
@@ -22,10 +26,6 @@ class Play extends Phaser.Scene {
         this.starfield = this.add.tileSprite(0, 0, game.config.width, 
             game.config.height, 'backdrop').setOrigin(0, 0);
         
-        // green UI background
-        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, 
-            borderUISize *2, 0x00FF00).setOrigin(0, 0);
-
         // white borders
         this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, 
@@ -63,14 +63,18 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
+        // Music config
+        this.music = this.sound.add("music", {volume: 0.5, loop: true});
+        this.music.play();
+
         // initialize score
         this.p1Score = 0;
          // display score
         let scoreConfig = {
-            fontFamily: 'Courier',
+            fontFamily: 'Garamond',
             fontSize: '28px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
+            backgroundColor: '#0b2e01',
+            color: '#ffffff',
             align: 'right',
             padding: {
             top: 5,
@@ -98,6 +102,7 @@ class Play extends Phaser.Scene {
             this.scene.restart();
         }
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.music.stop();
             this.scene.start("menuScene");
         }
         
